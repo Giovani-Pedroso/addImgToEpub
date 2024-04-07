@@ -19,52 +19,73 @@ const editEpub = async () => {
       if (file.includes("html")) filesToEdit.push(file);
     }
 
-    //beging fo the for loop
-    const fileName = "chapter-2.html";
-    const contentObj = zip.file(fileName) as any;
+    //--------------- TEST BEGIN -----------------------------------
+    // const fileName = "chapter-2.html";
+    //
+    // const contentObj = zip.file(fileName) as any;
+    // let content = (await contentObj.async("text")) as string;
+    // const infos = await downloadImgsFromHtml(fileName, content);
+    //
+    // // console.log(infos);
+    // infos.forEach(async (info) => {
+    //   if (info.alreadOnEbook) return;
+    //   content = content.replace(info.imgOgSrc, info.imgLocalOnEbook);
+    //   zip.file(
+    //     `${info.imgLocalOnEbook}`,
+    //     await fs.promises.readFile(`${info.imgLocalSrc}`),
+    //   );
+    // });
+    // zip.file(fileName, content);
+    //--------------- TEST END -----------------------------------
 
-    let content = (await contentObj.async("text")) as string;
-    const infos = await downloadImgsFromHtml(fileName, content);
-    console.log();
-    console.log(infos);
-    //Save the imgs in a folder
+    // console.log(filesToEdit);
+    //
+    //---------------  PRODUCTON BEGIN-----------------------------------
+    filesToEdit.forEach(async (file) => {
+      const fileName = file;
 
-    infos.forEach(async (info) => {
-      content = content.replace(info.imgOgSrc, info.imgLocalOnEbook);
-      // console.log(info.imgLocalSrc);
-      const img = await fs.promises.readFile(`./${info.imgLocalSrc}`);
-      // console.log(info.paths[3], info.paths[4]);
-      // zip.file("./tse.png", img);
-      // zip.file("./bbbbb.txt", "rtastars atrstsr");
-      zip.file(
-        `${info.imgLocalOnEbook}`,
-        await fs.promises.readFile(`.${info.imgLocalSrc}`),
-      );
-      // console.log("img zip", x);
+      const contentObj = zip.file(fileName) as any;
+      let content = (await contentObj.async("text")) as string;
+      const infos = await downloadImgsFromHtml(fileName, content);
+
+      // console.log(infos);
+      infos.forEach(async (info) => {
+        if (info.alreadOnEbook) return;
+        content = content.replace(info.imgOgSrc, info.imgLocalOnEbook);
+        zip.file(
+          `${info.imgLocalOnEbook}`,
+          await fs.promises.readFile(`${info.imgLocalSrc}`),
+        );
+      });
+      zip.file(fileName, content);
+      // const content = await contentObj.async("text");
+      // downloadImgsFromHtml(content);
     });
-    zip.file(fileName, content);
-    zip.file("./aaa.txt", "rtastars atrstsr");
+    //---------------  PRODUCTON END -----------------------------------
+
+    //beging fo the for loop
     //end fo the for loop
-    await delay(6000);
+    await delay(30000);
     //save the updated file
+
     const updatedEpubData = await zip.generateAsync({ type: "nodebuffer" });
     const outputPath = "updated.epub";
     await fs.promises.writeFile(outputPath, updatedEpubData);
     console.log("done");
-
-    // console.log(filesToEdit);
-    // filesToEdit.forEach(async (file) => {
-    //   const contentObj = zip.file(file) as any;
-    //   const content = await contentObj.async("text");
-    //   downloadImgsFromHtml(content);
-    // });
-    // const cha2 = zip.file("chapter-2.html");
-
-    // console.log(cha2);
   } catch (err) {
     console.log(err);
   }
 };
+
+/*
+
+
+    console.log();
+    console.log(infos);
+    //Save the imgs in a folder
+
+    zip.file("./aaa.txt", "rtastars atrstsr");
+  */
 
 editEpub();
 console.log("hello");

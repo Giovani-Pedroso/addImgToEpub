@@ -37,7 +37,8 @@ const addImgToFile = async (filePath) => {
     // const fileName = src.split("/").slice(-1)[0];
     const fileName = `${uuid.v4()}.png`;
 
-    if (src) downloadImg(srcTest, fileName, folderToSaveImgs);
+    console.log("from getImg()", src);
+    if (src) downloadImg(src, fileName, folderToSaveImgs);
     // const imgName = src.split(".").slice(-2).join(".");
     imgsToAdd.push({
       imgOg: src,
